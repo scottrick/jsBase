@@ -60,7 +60,7 @@ PointObject.prototype.draw = function(context) {
 	else {
 		context.beginPath();
 
-		context.fillStyle = "#0a0";
+		context.fillStyle = "#0aa";
 		context.strokeStyle = "fff";
 
 		context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
