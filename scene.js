@@ -21,8 +21,8 @@ Scene.prototype.update = function(deltaTime) {
 	}
 
 	this.dumpTimer += deltaTime;
-	if (this.dumpTimer >= 1) {
-		this.dumpTimer -= 1;
+	if (this.dumpTimer >= 4) {
+		this.dumpTimer -= 4;
 		this.getInfo();
 	}
 };

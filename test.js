@@ -53,6 +53,43 @@ Game.run = (function() {
 		var nextGameUpdateTick = (new Date).getTime() + ticksPerUpdate;
 		var nextGameRedrawTick = nextGameUpdateTick;
 		
+
+
+
+		/* TEST STUFF */
+		var hatfat = new Component("Test Component");
+		var hatfat1 = new Component("zxcv");
+		var hatfat2 = new Component("hatfat");
+
+		var e1 = new Entity("test entity1");
+		var e2 = new Entity("entity 2");
+		var e3 = new Entity("entity 3");
+
+		e1.addComponent(hatfat);
+		e1.addComponent(hatfat);
+		e1.addComponent(hatfat1);
+		e1.addComponent(hatfat2);
+		e1.addComponent(hatfat);
+		e1.addComponent(hatfat2);
+		e1.addComponent(new Component("render"));
+		e1.addComponent(new Component("render"));
+		e1.addComponent(new Component("render"));
+
+		var zxcvComponent = e1.getComponentByType("zxcv");
+		console.log("zxcv component: " + zxcvComponent);
+
+		var componentResults = e1.getComponentsByType("render");
+		console.log("render components: " + componentResults);
+
+		e1.dump();
+		e2.dump();
+		e3.dump();
+
+		/* END TEST STUFF */
+
+
+
+
 		return function() {
 			while ((new Date).getTime() > nextGameUpdateTick) {
 				nextGameUpdateTick += ticksPerUpdate;
