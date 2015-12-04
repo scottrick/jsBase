@@ -1,53 +1,35 @@
 /* 
 	Entity
 
-	An entity is a collection of components.
+	An Entity is a collection of components.
+	Each entity can only have one component of each type.
 */
-
-var Entity = function(name) {
+function Entity(name) {
   	this.name = name;
-	this.components = [];
+	this.components = {};
+
+	this.uuid = Entity.nextUUID++;
 };
+
+Entity.nextUUID = 1;
 
 Entity.prototype.getName = function() {
 	return this.name;
 };
 
 Entity.prototype.addComponent = function(component) {
-	if (this.components.indexOf(component) >= 0) {
+	if (component == null) {
 		return;
 	}
 
-	this.components.push(component);
+	this.components[component.type] = component;
 };
-
-/* returns the first component with this type */
-Entity.prototype.getComponentByType = function(type) {
-	for (var i = 0; i < this.components.length; i++) {
-		component = this.components[i];
-		if (component.type == type) {
-			return component;
-		}
-	}
-
-	return null;
-}
-
-/* returns a list of components with this type */
-Entity.prototype.getComponentsByType = function(type) {
-	var results = [];
-
-	for (var i = 0; i < this.components.length; i++) {
-		component = this.components[i];
-		if (component.type == type) {
-			results.push(type);
-		}
-	}
-
-	return results;
-}
 
 Entity.prototype.dump = function() {
 	console.log("Entity [" + this.name + "]");
 	console.log("  Components: " + this.components);
 };
+
+Entity.prototype.toString = function() {
+	return "Entity [" + this.name + "] " + this.components;
+}

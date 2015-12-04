@@ -1,5 +1,8 @@
-/* Component */
+/* 
+	Component 
 
+	A component is something that makes up an entity.
+*/
 var Component = function(type) {
   this.type = type;
 };

@@ -29,78 +29,62 @@ addEventListener("keyup", function (e) {
 
 var Game = { };
 
-Game.updatesPerSecond = 120;
-Game.drawsPerSecond = 30;
-Game.paused = false;
-Game.slowMotion = false;
-Game.slowMotionFactor = 5.0;
+Game.updatesPerSecond = 60; /* Game state updates per second.  Updates are not skipped! */
+Game.drawsPerSecond = 60;	/* Target number of redraws per second.  Draws WILL be skipped if it gets behind. */
 Game.time = 0.0;
-Game.scene = null;
+Game.scene = null; 			/* the current scene */
+Game.nextScene = null; 		/* the scene we should switch to next */
 Game.currentMusic = null;
 Game.previousMusic = null;
 
-Game.togglePause = function() {
-	this.paused = !this.paused;
-}
-
-Game.toggleSlowMotion = function() {
-	this.slowMotion = !this.slowMotion;
-}
+/* variables for keeping track of draw and update FPS */
+Game.currUpdatesCounter = 0;
+Game.prevUpdatesCounter = 0;
+Game.currDrawCounter = 0;
+Game.prevDrawCounter = 0;
+Game.fpsPrevTime = 0;
+Game.fpsDisplayEnabled = true;
 
 Game.run = (function() {
 		var ticksPerUpdate = 1000 / Game.updatesPerSecond;
 		var ticksPerRedraw = 1000 / Game.drawsPerSecond;
 		var nextGameUpdateTick = (new Date).getTime() + ticksPerUpdate;
 		var nextGameRedrawTick = nextGameUpdateTick;
-		
 
-
-
-		/* TEST STUFF */
-		var hatfat = new Component("Test Component");
-		var hatfat1 = new Component("zxcv");
-		var hatfat2 = new Component("hatfat");
-
-		var e1 = new Entity("test entity1");
-		var e2 = new Entity("entity 2");
-		var e3 = new Entity("entity 3");
-
-		e1.addComponent(hatfat);
-		e1.addComponent(hatfat);
-		e1.addComponent(hatfat1);
-		e1.addComponent(hatfat2);
-		e1.addComponent(hatfat);
-		e1.addComponent(hatfat2);
-		e1.addComponent(new Component("render"));
-		e1.addComponent(new Component("render"));
-		e1.addComponent(new Component("render"));
-
-		var zxcvComponent = e1.getComponentByType("zxcv");
-		console.log("zxcv component: " + zxcvComponent);
-
-		var componentResults = e1.getComponentsByType("render");
-		console.log("render components: " + componentResults);
-
-		e1.dump();
-		e2.dump();
-		e3.dump();
-
-		/* END TEST STUFF */
-
-
-
+		var currentTime = 0;
 
 		return function() {
-			while ((new Date).getTime() > nextGameUpdateTick) {
+			currentTime = (new Date).getTime();
+
+			if (currentTime > Game.fpsPrevTime + 1000) {
+				Game.fpsPrevTime = currentTime;
+				Game.prevUpdatesCounter = Game.currUpdatesCounter;
+				Game.prevDrawCounter = Game.currDrawCounter;
+				Game.currUpdatesCounter = 0;
+				Game.currDrawCounter = 0;
+			}	
+
+			/* update the game state until its caught up with the current time */
+			while (currentTime > nextGameUpdateTick) {
 				nextGameUpdateTick += ticksPerUpdate;
 
 				Game.update();
+				Game.currUpdatesCounter++;
+			}
 
-				if (nextGameUpdateTick > nextGameRedrawTick) {
-					Game.draw();
+			/* draw at most once, if the nextGameRedrawTick has been reached */
+			if (currentTime > nextGameRedrawTick) {
+				var drawsBehind = (currentTime - nextGameRedrawTick) / ticksPerRedraw;
+				if (drawsBehind > 1) {
+					nextGameRedrawTick = (new Date).getTime() + ticksPerRedraw;
+				}
+				else {
 					nextGameRedrawTick += ticksPerRedraw;
 				}
-			}		
+
+				Game.draw();
+				Game.currDrawCounter++;
+			}
 		};
 })();
 
@@ -108,24 +92,48 @@ Game.draw = function() {
 	context.fillStyle = "#000"
 	context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
-	this.scene.draw(context);
+	this.scene.draw();
+
+	if (Game.fpsDisplayEnabled) {
+		context.font="14px Courier";
+		context.fillStyle = "#ddf"
+		context.fillText("updates/s: " + Game.prevUpdatesCounter, 10, 20);
+		context.fillText("draws/s:   " + Game.prevDrawCounter, 10, 36);
+	}
 };
 
-Game.update = function() { 
-	if (this.paused) {
+Game.update = function() {
+	if (this.nextScene != null) {
+		/* we have a new scene, so change scenes! */
+		this.scene = this.nextScene;
+		this.nextScene = null;
+	}
+
+	if (this.scene.isPaused()) {
 		return;
 	}
 
 	var deltaTime = 1 / Game.updatesPerSecond;
 
-	if (this.slowMotion) {
-		deltaTime = deltaTime / this.slowMotionFactor;
-	}
+	/* scale the deltaTime by the scene update speed */
+	deltaTime = deltaTime * this.scene.getUpdateSpeed();
 
 	this.time += deltaTime;
 
 	this.scene.update(deltaTime);
 };
+
+Game.getContext = function() {
+	return context;
+}
+
+Game.getImages = function() {
+	return theImages;
+}
+
+Game.setNextScene = function(nextScene) {
+	this.nextScene = nextScene;
+}
 
 Game.handleKeyDown = function(key) {
 	Game.scene.handleKeyDown(key);
@@ -134,24 +142,18 @@ Game.handleKeyDown = function(key) {
 Game.handleKeyUp = function(key) {
 	Game.scene.handleKeyUp(key);
 
-	// if (key == 32) { // spacebar
-	// 	Game.togglePause();
-	// }
+	if (key == 32) { // spacebar
+		this.scene.togglePause();
+	}
 
-	// if (key == 83) { //  s
-	// 	Game.toggleSlowMotion();
-	// }
-
-	// if (key == 66) { //  b
-	// 	if (Game.scene.DEBUG_DRAW != null) {
-	// 		Game.scene.DEBUG_DRAW = !Game.scene.DEBUG_DRAW;
-	// 	}
-	// }
+	if (key == 78) { // n
+		this.setNextScene(new TestScene(this));
+	}
 }
 
 Game.reset = function() {
 	this.scene = null;
-	this.scene = new TestScene();
+	this.scene = new TestScene(this);
 }
 
 Game.setMusic = function(music) {
