@@ -14,7 +14,7 @@ TestScene.prototype.setupTest = function() {
 	this.addSystem(new MovementSystem());
 	this.addSystem(new TestSystem());
 
-	var boomSize = 24;
+	var boomSize = 20;
 
 	var testEntity = new Entity("testEntity");
 	var transform = new Transform(new Vector(300, 300), new Vector(200, 200), -10);
