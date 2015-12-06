@@ -1,8 +1,5 @@
 jsBase TODO
 ---------------------------
-turn into some sort of library, for easy setup for LD and other projects?
-	and have testJs project with "testScene, testSystem, etc"
-
 mouse click handling
 
 collision detection?
