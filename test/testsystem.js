@@ -5,10 +5,11 @@ function TestSystem() {
 	System.call(this, [TestComponent.type, Transform.type]);
 }
 
-TestSystem.prototype.updateEntity = function(scene, entity, deltaTime) {
+TestSystem.prototype.handleEntity = function(scene, entity, deltaTime) {
 	var bombComponent = entity.components[TestComponent.type];
 	var transform = entity.components[Transform.type];
 	var drawable = entity.components[Drawable.type];
+	var body = entity.components[PhysicsBody.type];
 
 	var context = scene.game.getContext();
 
@@ -19,14 +20,14 @@ TestSystem.prototype.updateEntity = function(scene, entity, deltaTime) {
 		for (var i = 0; i < bombComponent.number; i++) {
 			var scale = transform.scale.copy();
 			scale.multiply(0.4); //scale to 25%
-			scale.multiply(1 + ((Math.random() - 0.5) * 0.1));
+			scale.multiply(1 + ((Math.random() - 0.5) * 0.1)); 
 
 			if (scale.x < 1 && scale.y < 1) {
 				continue;
 			}
 
 			var newTransform = new Transform(
-				transform.position.copy(),		//position
+				transform.position.copy().add(Math.random() * transform.scale.x),		//position
 				scale,							//scale
 				Math.random() * 360,			//rotation
 				transform.z + (Math.random() - 0.5)				//z
@@ -43,6 +44,7 @@ TestSystem.prototype.updateEntity = function(scene, entity, deltaTime) {
 			newEntity.addComponent(newTransform);
 			newEntity.addComponent(newMovement);
 			newEntity.addComponent(drawable);
+			newEntity.addComponent(body);
 
 			var newNumber = bombComponent.number / 2;
 			if (newNumber <= 1) {

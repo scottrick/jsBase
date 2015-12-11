@@ -8,7 +8,7 @@ function MovementSystem() {
 	System.call(this, [Movement.type, Transform.type]);
 }
 
-MovementSystem.prototype.updateEntity = function(scene, entity, deltaTime) {
+MovementSystem.prototype.handleEntity = function(scene, entity, deltaTime) {
 	var transform = entity.components[Transform.type];
 	var movementComponent = entity.components[Movement.type];
 

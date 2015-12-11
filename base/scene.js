@@ -52,13 +52,17 @@ Scene.prototype.updateSystem = function(system, deltaTime) {
 		return;
 	}
 
+	system.frameWorkStart(this, deltaTime);
+
 	for (var e = 0, len = this.entities.length; e < len; e++) {
 		var entity = this.entities[e];
 
 		if (system.checkEntity(entity)) {
-			system.updateEntity(this, entity, deltaTime);
+			system.handleEntity(this, entity, deltaTime);
 		}
-	}		
+	}
+
+	system.frameWorkEnd(this, deltaTime);
 }
 
 /* add/remove entities */

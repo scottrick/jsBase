@@ -24,8 +24,18 @@ System.prototype.checkEntity = function(entity) {
 }
 
 /* override this function in your custom systems */
-System.prototype.updateEntity = function(scene, entity, deltaTime) {
-	console.log("Entity updateEntity default function: " + this.types);
+System.prototype.handleEntity = function(scene, entity, deltaTime) {
+
+}
+
+/* override this function in your custom systems */
+System.prototype.frameWorkStart = function(scene, deltaTime) {
+
+}
+
+/* override this function in your custom systems */
+System.prototype.frameWorkEnd = function(scene, deltaTime) {
+
 }
 
 System.prototype.isEnabled = function() {

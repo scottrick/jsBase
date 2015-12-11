@@ -22,8 +22,11 @@ Drawable.prototype.draw = function(context) {
 	/* default color */
 	context.fillStyle = "#a0a";
 
+	/* draw a circle with a diameter of 1 */
+	context.arc(0, 0, 0.5, 0, 2 * Math.PI);
+
 	/* draw a 1x1 rectangle */
-	context.rect(-0.5, -0.5, 1, 1);
+	// context.rect(-0.5, -0.5, 1, 1);
 
 	context.fill();
 }
