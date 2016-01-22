@@ -28,13 +28,21 @@ Scene.prototype.draw = function() {
 }
 
 Scene.prototype.update = function(deltaTime) {
-	this.doEntityMaintenance();
-	this.updateSystems(deltaTime);
+	/* scale the deltaTime by the scene update speed */
+	var sceneDeltaTime = deltaTime * this.getUpdateSpeed();
 
-	this.dumpTimer += deltaTime;
-	if (this.dumpTimer >= this.dumpDelay) {
-		this.dumpTimer -= this.dumpDelay;
-		console.log(this.toString());
+	this.doEntityMaintenance();
+
+	if (!this.isPaused()) {
+		this.updateSystems(sceneDeltaTime);
+	}
+
+	if (Game.DEBUG) {
+		this.dumpTimer += deltaTime;
+		if (this.dumpTimer >= this.dumpDelay) {
+			this.dumpTimer -= this.dumpDelay;
+			console.log(this.toString());
+		}
 	}
 };
 
@@ -57,7 +65,7 @@ Scene.prototype.updateSystem = function(system, deltaTime) {
 	for (var e = 0, len = this.entities.length; e < len; e++) {
 		var entity = this.entities[e];
 
-		if (system.checkEntity(entity)) {
+		if (entity.enabled && system.checkEntity(entity)) {
 			system.handleEntity(this, entity, deltaTime);
 		}
 	}
@@ -105,13 +113,23 @@ Scene.prototype.toString = function() {
 	return "Scene has " + this.entities.length + " entities.";
 }
 
+Scene.prototype.debugDump = function() {
+	console.log("Scene Debug Dump");
+	for (var e = 0, len = this.entities.length; e < len; e++) {
+		var entity = this.entities[e];
+		console.log("entity[" + e + "]=" + entity);
+	}
+}
+
 Scene.prototype.handleKeyDown = function(key) {
 
 }
 
 Scene.prototype.handleKeyUp = function(key) {
-	if (key == 83) { //s
-		this.toggleSlowMotion();
+	if (Game.DEBUG) {
+		if (key == 83) { //s
+			this.toggleSlowMotion();
+		}
 	}
 }
 
@@ -138,4 +156,8 @@ Scene.prototype.getUpdateSpeed = function() {
 
 Scene.prototype.getMusic = function() {
 	return theSounds.getGameTrack();
+}
+
+Scene.prototype.shouldMusicRepeat = function() {
+	return false;
 }

@@ -7,6 +7,7 @@
 function Entity(name) {
   	this.name = name;
 	this.components = {};
+	this.enabled = true; //if disabled, the entity will be ignored by the game
 
 	this.uuid = Entity.nextUUID++;
 };
@@ -31,5 +32,5 @@ Entity.prototype.dump = function() {
 };
 
 Entity.prototype.toString = function() {
-	return "Entity [" + this.name + "] " + this.components;
+	return "Entity [" + this.name + "]";
 }

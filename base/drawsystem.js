@@ -2,10 +2,10 @@ DrawSystem.prototype = new System();
 DrawSystem.prototype.constructor = DrawSystem;
 
 /*
-	DrawSystem handles basic drawing.  Entities can be drawn if they have a Drawable and a Transform. 
+	DrawSystem handles basic drawing.  Entities can be drawn if they have a Drawable.  Transform is optional.
 */
 function DrawSystem() {
-	System.call(this, [Drawable.type, Transform.type]);
+	System.call(this, [Drawable.type]);
 
 	/* we keep our own z-sorted list of entities we need to draw */
 	this.entities = [];
@@ -16,7 +16,12 @@ DrawSystem.prototype.addEntities = function(entities) {
 		var entity = entities[i];
 		var drawable = entity.components[Drawable.type];
 		var transform = entity.components[Transform.type];
-		entity.zCache = drawable.z + transform.z;
+
+		entity.zCache = drawable.z;
+
+		if (transform != null) {
+			entity.zCache += transform.z;
+		}
 
 		this.entities.push(entity);
 	}
@@ -50,7 +55,9 @@ DrawSystem.prototype.draw = function(context) {
 	this.drawCount = 0;
 
 	for (var i = 0, len = this.entities.length; i < len; i++) {
-		this.drawEntity(context, this.entities[i]);
+		if (this.entities[i].enabled) {
+			this.drawEntity(context, this.entities[i]);
+		}
 	}
 }
 
@@ -62,9 +69,12 @@ DrawSystem.prototype.drawEntity = function(context, entity) {
 
 	context.save();
 	context.globalAlpha = drawable.alpha;
-	context.translate(transform.position.x, transform.position.y);
-	context.rotate(Math.PI / 180 * transform.rotation);
-	context.scale(transform.scale.x, transform.scale.y);
+
+	if (transform != null) {
+		context.translate(transform.position.x, transform.position.y);
+		context.rotate(Math.PI / 180 * transform.rotation);
+		context.scale(transform.scale.x, transform.scale.y);
+	}
 
 	drawable.draw(context);
 	context.restore();

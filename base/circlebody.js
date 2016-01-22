@@ -6,6 +6,8 @@ CircleBody.prototype.constructor = CircleBody;
 */
 function CircleBody() {
 	PhysicsBody.call(this);
+
+	this.bodyType = "circle";
 }
 
 CircleBody.prototype.isFullyContainedIn = function(transform, rect) {

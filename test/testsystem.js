@@ -27,7 +27,7 @@ TestSystem.prototype.handleEntity = function(scene, entity, deltaTime) {
 			}
 
 			var newTransform = new Transform(
-				transform.position.copy().add(Math.random() * transform.scale.x),		//position
+				transform.position.copy(),		//position
 				scale,							//scale
 				Math.random() * 360,			//rotation
 				transform.z + (Math.random() - 0.5)				//z

@@ -1,7 +1,7 @@
-TestScene.prototype = new Scene();
-TestScene.prototype.constructor = TestScene;
+Test2Scene.prototype = new Scene();
+Test2Scene.prototype.constructor = Test2Scene;
 
-function TestScene(game) {
+function Test2Scene(game) {
 	Scene.call(this, game);
 
 	this.dumpDelay = 1;
@@ -10,15 +10,15 @@ function TestScene(game) {
 	this.setupTest();
 }
 
-TestScene.prototype.setupTest = function() {
-	var collisionSystem = new CollisionSystem();
-	this.addSystem(new MovementSystem());
-	// this.addSystem(new TestSystem());
-	this.addSystem(collisionSystem);
-	this.addSystem(new SpawnSystem());
-	this.addSystem(new BoundarySystem(new Rect(0, 0, 800, 600)));
+Test2Scene.prototype.setupTest = function() {
+	var collisionSystem = new CollisionSystem(this);
 
-	var boomSize = 8;
+	this.addSystem(new MovementSystem());
+	this.addSystem(new TestSystem());
+	this.addSystem(collisionSystem);
+	this.addSystem(new BoundarySystem(new Rect(-100, -100, 1000, 800)));
+
+	var boomSize = 10;
 
 	var quadtreeEntity = new Entity("quadtree drawable entity");
 	var quadtreeDrawable = new QuadtreeDrawable(collisionSystem.quadtree);
@@ -38,31 +38,19 @@ TestScene.prototype.setupTest = function() {
 	testEntity.addComponent(new TestComponent(2.5, boomSize));
 
 	var transform2 = new Transform(new Vector(700, 300), new Vector(150, 150), 9);
-	var movement2 = new Movement(null, new Vector(-40, 0), 0, 1);
+	var movement2 = new Movement(null, new Vector(-50, 0), 0, 80);
 	var body2 = new CircleBody();
 	var anotherEntity = new Entity("testEntity2");
 	anotherEntity.addComponent(transform2);
 	anotherEntity.addComponent(movement2);
 	anotherEntity.addComponent(body2);
-	anotherEntity.addComponent(new TestComponent(1.5, boomSize));
-	anotherEntity.addComponent(new Drawable());
+	anotherEntity.addComponent(new TestComponent(2, boomSize));
+	anotherEntity.addComponent(new ImageDrawable(this.game.getImages().getDefaultImage()));
 
 	this.addEntity(testEntity);
 	this.addEntity(anotherEntity);
+}
 
-	for (var i = 20; i <= 800; i += 50) {
-		var s = new Entity("spawnerx+" + i);
-		s.addComponent(new Transform(new Vector(i, 600), new Vector(24, 24)));
-		s.addComponent(new Drawable());
-		s.addComponent(new Spawner(new Vector(0.0, -1.5), .1));
-		this.addEntity(s);
-	}
+Test2Scene.prototype.handleCollisionEvent = function(event) {
 
-	for (var i = 20; i <= 600; i += 30) {
-		var s = new Entity("spawnery+" + i);
-		s.addComponent(new Transform(new Vector(0, i), new Vector(24, 24)));
-		s.addComponent(new Drawable());
-		s.addComponent(new Spawner(new Vector(1.5, 0), .1));
-		this.addEntity(s);
-	}
 }

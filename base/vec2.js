@@ -2,18 +2,33 @@
 	Simple 2 dimensional vector class.
 */
 function Vector(x, y) {
-	this.x = x;
-	this.y = y;
+	if (x != null) {
+		this.x = x;
+	}
+	else {
+		this.x = 0;
+	}
+
+	if (y != null) {
+		this.y = y;
+	}
+	else {
+		this.y = 0;
+	}
 }
 
 Vector.prototype.multiply = function(value) {
 	this.x *= value;
 	this.y *= value;
+
+	return this;
 }
 
 Vector.prototype.add = function(value) {
 	this.x += value;
 	this.y += value;
+
+	return this;
 }
 
 Vector.prototype.distance = function()  {
@@ -25,6 +40,8 @@ Vector.prototype.normalize = function() {
 
 	this.x = this.x / distance;
 	this.y = this.y / distance;
+
+	return this;
 }
 
 Vector.prototype.dot = function(vec) {

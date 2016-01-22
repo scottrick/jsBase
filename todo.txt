@@ -2,5 +2,7 @@ jsBase TODO
 ---------------------------
 mouse click handling
 
-collision detection?
+fix game timing issue when the tab is backgrounded
+
+improve collision detection -> circles, lines, rays, line segments, convex polygons
 

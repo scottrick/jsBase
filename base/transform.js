@@ -41,6 +41,10 @@ function Transform(position, scale, rotation, z) {
 	}
 }
 
+Transform.prototype.copy = function() {
+	return new Transform(this.position.copy(), this.scale.copy(), this.rotation, this.z);
+}
+
 Transform.prototype.toString = function() {
 	return this.type + "[p=" + this.position + " s=" + this.scale + " r=" + this.rotation + "z=" + this.z + "]";
 }

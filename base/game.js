@@ -14,24 +14,25 @@ var context = canvas.getContext("2d");
 var theImages = new Images(document);
 var theSounds = new Sounds(document);
 
-//state variables
-var keysDown = {};
+var Game = { };
+
+//key state variables
+Game.keysDown = {};
 
 addEventListener("keydown", function (e) {
-		keysDown[e.keyCode] = true;
+		Game.keysDown[e.keyCode] = true;
 		Game.handleKeyDown(e.keyCode);
 }, false);
 
 addEventListener("keyup", function (e) {
-		delete keysDown[e.keyCode];
+		delete Game.keysDown[e.keyCode];
 		Game.handleKeyUp(e.keyCode);
 }, false);
 
-var Game = { };
+Game.DEBUG = true;
 
 Game.updatesPerSecond = 60; /* Game state updates per second.  Updates are not skipped! */
 Game.drawsPerSecond = 60;	/* Target number of redraws per second.  Draws WILL be skipped if it gets behind. */
-Game.time = 0.0;
 Game.scene = null; 			/* the current scene */
 Game.nextScene = null; 		/* the scene we should switch to next */
 Game.currentMusic = null;
@@ -95,7 +96,7 @@ Game.draw = function() {
 	this.scene.draw();
 
 	if (Game.fpsDisplayEnabled) {
-		context.font="14px Courier";
+		context.font = "14px Courier";
 		context.fillStyle = "#ddf"
 		context.fillText("updates/s: " + Game.prevUpdatesCounter, 10, 20);
 		context.fillText("draws/s:   " + Game.prevDrawCounter, 10, 36);
@@ -107,16 +108,11 @@ Game.update = function() {
 		/* we have a new scene, so change scenes! */
 		this.scene = this.nextScene;
 		this.nextScene = null;
-	}
 
-	if (this.scene.isPaused()) {
-		return;
+		this.setMusic(this.scene.getMusic());
 	}
 
 	var deltaTime = 1 / Game.updatesPerSecond;
-
-	/* scale the deltaTime by the scene update speed */
-	deltaTime = deltaTime * this.scene.getUpdateSpeed();
 
 	this.time += deltaTime;
 
@@ -136,24 +132,37 @@ Game.setNextScene = function(nextScene) {
 }
 
 Game.handleKeyDown = function(key) {
+	if (Game.scene == null) {
+		return;
+	}
+
 	Game.scene.handleKeyDown(key);
 }
 
 Game.handleKeyUp = function(key) {
-	Game.scene.handleKeyUp(key);
-
-	if (key == 32) { // spacebar
-		this.scene.togglePause();
+	if (Game.scene == null) {
+		return;
 	}
 
-	if (key == 78) { // n
-		this.setNextScene(new TestScene(this));
+	Game.scene.handleKeyUp(key);
+
+	if (Game.DEBUG) {
+		if (key == 80) { // pause
+			this.scene.togglePause();
+		}
+
+		if (key == 27) { // ESC
+			this.setNextScene(new TestMenuScene(this));
+		}
+
+		if (key == 68) { // d
+			this.scene.debugDump();
+		}
 	}
 }
 
 Game.reset = function() {
-	this.scene = null;
-	this.scene = new TestScene(this);
+	this.setNextScene(new TestMenuScene(this));
 }
 
 Game.setMusic = function(music) {
@@ -185,7 +194,10 @@ Game.setMusic = function(music) {
 	Game.currentMusic.addEventListener('ended', function() {
 		if (Game.currentMusic == this) {
 		    this.currentTime = 0;
-		    this.play();
+
+		    if (Game.scene.shouldMusicRepeat()) {
+			    this.play();
+			}
 		}
 	}, false);
 
