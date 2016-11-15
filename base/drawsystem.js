@@ -28,8 +28,8 @@ DrawSystem.prototype.addEntities = function(entities) {
 
 	/* sort drawables array */
 	this.entities.sort(sort);
-}
 
+}
 var sort = function(a, b) {
 	if (a.zCache === b.zCache) {
 		return a.uuid - b.uuid;

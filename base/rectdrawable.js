@@ -11,20 +11,16 @@ function RectDrawable(rect) {
 		this.rect = rect;
 	}
 
-	this.strokeColor = "#000";
-	this.fillColor = "#000";
-	this.lineWidth = "2";
+	this.strokeColor = "#0ff";
+	this.fillColor = "#f00";
+	this.lineWidth = "0";
 }
 
 RectDrawable.prototype.draw = function(context) {
-	context.beginPath();
-
 	context.fillStyle = this.fillColor;
 	context.strokeStyle = this.strokeColor;
 	context.lineWidth = this.lineWidth;
 
 	context.fillRect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
 	context.strokeRect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-
-	context.fill();
 }
