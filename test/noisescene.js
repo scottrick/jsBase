@@ -12,21 +12,21 @@ function NoiseScene(game) {
 	var map = new Map(mapWidth, mapHeight);
 	map.generate(this.game.getContext());
 
-	// var testEntity = new Entity("test entity");
-	// var imageDrawable = new ImageDrawable(this.game.getImages().getDefaultImage());
-	// imageEntity.addComponent(imageDrawable);
-
-
-
-	// var imageEntity = new Entity("asdfasdasdf");
-	// var dataDrawable = new ImageDataDrawable(map.mapImageData);
-	// imageEntity.addComponent(dataDrawable);
-	// this.addEntity(imageEntity);
-
 	var mapEntity = new Entity("map entity");
 	this.mapDrawable = new MapDrawable(map, new Rect(0, 0, 800, 600));
 	mapEntity.addComponent(this.mapDrawable);
 	this.addEntity(mapEntity);
+
+	// var imageEntity = new Entity("Image Data Drawable");
+	// var dataDrawable = new ImageDataDrawable(map.mapImageData);
+	// imageEntity.addComponent(dataDrawable);
+	// this.addEntity(imageEntity);
+
+	// var testEntity = new Entity("Test Entity");
+	// var defaultImage = this.game.getImages().getDefaultImage();
+	// var imageDrawable = new ImageDrawable(defaultImage, new Rect(0, 0, defaultImage.width, defaultImage.height));
+	// testEntity.addComponent(imageDrawable);
+	// this.addEntity(testEntity);
 }
 
 NoiseScene.prototype.handleKeyUp = function(key) {
